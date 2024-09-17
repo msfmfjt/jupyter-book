@@ -590,12 +590,13 @@ def builder_specific_actions(
         print_func(f"Finished generating latex for {cmd_type}...")
         print_func(f"Converting {cmd_type} latex into PDF...")
         # Convert to PDF via tex and template built Makefile and make.bat
-        if sys.platform == "win32":
-            makecmd = os.environ.get("MAKE", "make.bat")
-        else:
-            makecmd = os.environ.get("MAKE", "make")
         try:
-            output = subprocess.run([makecmd, "all-pdf"], cwd=output_path)
+            if sys.platform == "win32":
+                makecmd = os.environ.get("MAKE", "make.bat")
+                output = subprocess.run([makecmd, "all-pdf"], cwd=output_path, shell=True)
+            else:
+                makecmd = os.environ.get("MAKE", "make")
+                output = subprocess.run([makecmd, "all-pdf"], cwd=output_path)
             if output.returncode != 0:
                 _error("Error: Failed to build pdf")
                 return output.returncode
